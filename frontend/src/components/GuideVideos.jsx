@@ -21,9 +21,9 @@ export function toYouTubeEmbed(url) {
   const u = url.trim();
   let id = null;
   try {
-    const m1 = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{6,})/);
+    const m1 = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
     if (m1) id = m1[1];
-    else if (/^[A-Za-z0-9_-]{6,}$/.test(u)) id = u; // hanya ID
+    else if (/^[A-Za-z0-9_-]{11}$/.test(u)) id = u; // hanya ID (tepat 11 karakter, standar YouTube)
   } catch { id = null; }
   return id ? `https://www.youtube.com/embed/${id}` : null;
 }

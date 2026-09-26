@@ -65,3 +65,11 @@ Membangun aplikasi sistem keuangan untuk PT. SBB berdasarkan form Excel PPBJ (Pe
 - Perbaikan bug render escape unicode literal (\u2014/\u2026) di JSX menjadi karakter — dan ….
 - Peningkatan UI global (brand tetap): tipografi (line-height, letter-spacing, font-features), radius kartu 0.625rem, bayangan lembut modern, focus-ring aksesibel, kontras sidebar/header naik.
 - Terverifikasi via frontend testing agent: 20/20 skenario lulus.
+
+
+---
+## Pembaruan (Fitur: Tur Otomatis, Video Panduan, Cari Global)
+- **Tur Otomatis Pertama**: TourModal muncul otomatis saat login pertama (localStorage "tour-seen"); tidak berulang setelah ditutup. (frontend: Layout.jsx)
+- **Cari Global**: kotak pencarian di header (GlobalSearch.jsx) memanggil GET /api/documents/search (regex no/kegiatan/keterangan/supplier/unit_kerja/lokasi, debounce 300ms, dropdown + navigasi ke /documents/:id). Endpoint didefinisikan sebelum /documents/{doc_id}.
+- **Video Panduan**: bagian baru di halaman Panduan (GuideVideos.jsx) dengan 5 slot alur (PPBJ, PP, PUM&PTUM, Jurnal, Anggaran). Admin/Keuangan dapat menempel tautan YouTube via tombol "Kelola Video" (validasi ID 11 karakter, reaktif). Tersimpan di DB via GET/PUT /api/guide-videos (PUT require_roles admin,keuangan).
+- Terverifikasi: backend 32/32, frontend 19/19 + verifikasi perbaikan validasi 9/9.
