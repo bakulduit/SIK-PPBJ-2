@@ -633,21 +633,28 @@ async def list_documents(doc_type: Optional[str] = None, user: dict = Depends(ge
 
 
 @api_router.get("/documents/search")
-async def search_documents(q: str = "", limit: int = 15, user: dict = Depends(get_current_user)):
+async def search_documents(q: str = "", limit: int = 15, doc_type: Optional[str] = None,
+                           status: Optional[str] = None, user: dict = Depends(get_current_user)):
     """Pencarian global dokumen lintas modul berdasarkan nomor, kegiatan,
-    keterangan, supplier, dan unit kerja (case-insensitive)."""
+    keterangan, supplier, dan unit kerja (case-insensitive). Opsional disaring
+    per jenis dokumen (doc_type) dan status."""
     term = (q or "").strip()
     if len(term) < 2:
         return []
     rx = {"$regex": re.escape(term), "$options": "i"}
-    query = {"$or": [
+    conditions = [{"$or": [
         {"no": rx},
         {"kegiatan": rx},
         {"keterangan": rx},
         {"supplier": rx},
         {"unit_kerja": rx},
         {"lokasi": rx},
-    ]}
+    ]}]
+    if doc_type:
+        conditions.append({"doc_type": doc_type})
+    if status:
+        conditions.append({"status": status})
+    query = conditions[0] if len(conditions) == 1 else {"$and": conditions}
     proj = {"_id": 0, "id": 1, "no": 1, "doc_type": 1, "kegiatan": 1,
             "keterangan": 1, "supplier": 1, "unit_kerja": 1, "total": 1,
             "status": 1, "tanggal": 1, "created_at": 1}
