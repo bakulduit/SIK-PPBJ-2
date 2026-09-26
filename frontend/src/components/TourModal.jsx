@@ -60,9 +60,9 @@ export default function TourModal({ onClose, userName }) {
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={finish} />
       <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-fade-up" data-testid="tour-modal">
-        <div className="bg-[#0d3c45] px-6 pt-6 pb-8 relative">
+        <div className="bg-gradient-to-br from-[#0d3c45] to-[#14758a] px-6 pt-6 pb-8 relative">
           <button onClick={finish} data-testid="tour-close"
-            className="absolute top-3 right-3 p-1.5 rounded-md text-teal-100/70 hover:text-white hover:bg-white/10">
+            className="absolute top-3 right-3 p-1.5 rounded-md text-teal-100/70 hover:text-white hover:bg-white/10 transition-colors">
             <X className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-4">
@@ -86,7 +86,13 @@ export default function TourModal({ onClose, userName }) {
           {i === 0 && userName && (
             <p className="text-slate-800 font-semibold mb-2">{step.title}</p>
           )}
-          <p className="text-slate-600 text-sm leading-relaxed">{step.body}</p>
+          <p className="text-slate-700 text-[15px] leading-relaxed">{step.body}</p>
+          {!isLast && (
+            <button onClick={finish} data-testid="tour-skip"
+              className="mt-4 text-xs font-semibold text-slate-400 hover:text-[#14758a] transition-colors">
+              Lewati tur
+            </button>
+          )}
         </div>
 
         <div className="px-6 pb-6 flex items-center justify-between gap-3">

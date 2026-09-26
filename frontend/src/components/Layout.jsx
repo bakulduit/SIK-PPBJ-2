@@ -54,7 +54,7 @@ export default function Layout({ children }) {
         {!mini && (
           <div className="leading-tight">
             <div className="text-white font-heading font-extrabold text-sm tracking-wide">PERMINTAAN KEUANGAN</div>
-            <div className="text-teal-200/80 text-[9px] font-medium">SISTEM PENGAJUAN BARANG & JASA</div>
+            <div className="text-teal-200/90 text-[10px] font-semibold tracking-wide mt-0.5">SISTEM PENGAJUAN BARANG &amp; JASA</div>
           </div>
         )}
       </div>
@@ -73,7 +73,7 @@ export default function Layout({ children }) {
               {!mini && (
                 <span className="flex-1">
                   {n.label}
-                  {n.desc && <span className="block text-[10px] font-normal opacity-60">{n.desc}</span>}
+                  {n.desc && <span className="block text-[11px] font-normal opacity-75 mt-0.5">{n.desc}</span>}
                 </span>
               )}
             </NavLink>
@@ -123,7 +123,7 @@ export default function Layout({ children }) {
             {collapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
           </button>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:block">PT. SUMBER BERDAYA BERSAMA</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:block">PT. SUMBER BERDAYA BERSAMA</span>
           </div>
           <div className="ml-auto flex items-center gap-3">
             <div className="text-right hidden sm:block">

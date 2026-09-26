@@ -54,3 +54,14 @@ Membangun aplikasi sistem keuangan untuk PT. SBB berdasarkan form Excel PPBJ (Pe
 - Data awal (seed_demo.py, idempoten): 4 unit kerja + pagu anggaran periode berjalan + 6 dokumen realisasi contoh → Dashboard & Rekap Anggaran terisi.
 - Uji E2E: backend 24/24 pytest, frontend 100% (login, 10 halaman, alur PPBJ→PUM→PP→PTUM, approval, generate jurnal PPN/PPh balanced). Fix UI kartu "Total Nilai Pengujian" (inline style) diverifikasi.
 - CATATAN: Email reset password belum dikonfigurasi (EMERGENT_EMAIL_KEY kosong) — link dicatat ke log, tidak dikirim email.
+
+
+---
+## Pembaruan (Sesi Impor & Penyempurnaan)
+- Import repo GitHub SIK-PPBJ + install dependencies (backend & frontend) — aplikasi berjalan.
+- Penyempurnaan Panduan Pengguna: hero gradient, grid Akses Cepat, bagian "Tips & Praktik Terbaik" (6 kartu), TOC diperluas.
+- Bantuan kontekstual (ModuleHelp) dirombak: badge peran, kotak Perhatian, tautan Terkait (navigasi antar modul), footer "Buka Panduan Lengkap", body-scroll lock.
+- help.js diperkaya (roles, caution, related, tips tambahan). TourModal: header gradient + tombol "Lewati tur".
+- Perbaikan bug render escape unicode literal (\u2014/\u2026) di JSX menjadi karakter — dan ….
+- Peningkatan UI global (brand tetap): tipografi (line-height, letter-spacing, font-features), radius kartu 0.625rem, bayangan lembut modern, focus-ring aksesibel, kontras sidebar/header naik.
+- Terverifikasi via frontend testing agent: 20/20 skenario lulus.

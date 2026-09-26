@@ -6,6 +6,7 @@ import {
   LayoutDashboard, FileText, Wallet, Receipt, ClipboardCheck, Coins, ReceiptText,
   BookOpen, PiggyBank, Percent, ListTree, Users, History, Search, PlayCircle,
   ChevronDown, ShieldCheck, ArrowRight, HelpCircle, Workflow, Info, BookMarked,
+  Sparkles, Zap, CheckCircle2, Lightbulb,
 } from "lucide-react";
 
 const ROLE_LABELS = {
@@ -192,12 +193,29 @@ const GLOSSARY = [
   { term: "Accurate", def: "Software akuntansi tujuan ekspor jurnal." },
 ];
 
+const BEST_PRACTICES = [
+  { t: "Ajukan tepat waktu", d: "Buat pengajuan sejak kebutuhan diketahui agar proses persetujuan tidak menumpuk di akhir bulan." },
+  { t: "Lengkapi rincian & lampiran", d: "Isi uraian item, nilai, dan lampirkan bukti/nota. Data lengkap mempercepat verifikasi approver & keuangan." },
+  { t: "Pantau pagu anggaran", d: "Cek Anggaran Bulanan sebelum mengajukan agar tidak melampaui pagu unit kerja Anda." },
+  { t: "Pertanggungjawabkan uang muka", d: "Segera buat PTUM setelah kegiatan selesai agar uang muka tidak menggantung." },
+  { t: "Jaga COA & pajak tetap akurat", d: "Master Akun dan tarif pajak yang benar membuat Jurnal Umum langsung cocok saat diimpor ke Accurate." },
+  { t: "Gunakan pencarian", d: "Manfaatkan kolom pencarian di tiap modul untuk menemukan dokumen berdasarkan nomor, kegiatan, atau supplier." },
+];
+
+const QUICK_ACCESS = [
+  { label: "Buat PPBJ", desc: "Ajukan pengadaan", icon: FileText, path: "/ppbj" },
+  { label: "Buat PP", desc: "Ajukan pembayaran", icon: Receipt, path: "/pp" },
+  { label: "Anggaran", desc: "Pagu vs realisasi", icon: PiggyBank, path: "/anggaran" },
+  { label: "Jurnal Umum", desc: "Ekspor Accurate", icon: BookOpen, path: "/jurnal" },
+];
+
 const TOC = [
   { id: "ikhtisar", label: "Ikhtisar Sistem", icon: Info },
   { id: "alur", label: "Alur Keuangan", icon: Workflow },
   { id: "peran", label: "Peran & Hak Akses", icon: ShieldCheck },
   { id: "modul", label: "Panduan Modul", icon: BookMarked },
   { id: "status", label: "Status Dokumen", icon: ClipboardCheck },
+  { id: "praktik", label: "Tips & Praktik Terbaik", icon: Sparkles },
   { id: "faq", label: "FAQ", icon: HelpCircle },
   { id: "glosarium", label: "Glosarium", icon: BookOpen },
 ];
@@ -232,28 +250,49 @@ export default function Panduan() {
   return (
     <div className="space-y-6" data-testid="panduan-page">
       {/* Hero */}
-      <div className="rounded-2xl bg-[#0d3c45] text-white p-6 lg:p-8 relative overflow-hidden">
+      <div className="rounded-2xl bg-gradient-to-br from-[#0d3c45] to-[#14758a] text-white p-6 lg:p-8 relative overflow-hidden shadow-lg">
+        <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/5" />
+        <div className="absolute -right-4 bottom-0 w-40 h-40 rounded-full bg-[#f2941f]/10" />
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center gap-5">
           <img src="/logo-icon.png" alt="Logo" className="w-16 h-16 object-contain drop-shadow shrink-0" />
           <div className="flex-1">
             <h1 className="font-heading text-2xl lg:text-3xl font-extrabold">Panduan Pengguna</h1>
-            <p className="text-teal-100/80 text-sm mt-1 max-w-2xl">
-              Pelajari cara menggunakan Sistem Keuangan PT. Sumber Berdaya Bersama \u2014 dari membuat pengajuan,
-              proses persetujuan, penjurnalan, hingga pemantauan anggaran.
+            <p className="text-teal-50/90 text-[15px] mt-2 max-w-2xl leading-relaxed">
+              Pelajari cara menggunakan Sistem Keuangan PT. Sumber Berdaya Bersama — dari membuat pengajuan,
+              proses persetujuan, penjurnalan, hingga pemantauan anggaran. Baru pertama kali? Mulai dari tur singkat.
             </p>
           </div>
           <button onClick={() => setTour(true)} data-testid="start-tour-btn"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[#f2941f] hover:bg-[#d98014] text-white text-sm font-bold shadow-lg whitespace-nowrap">
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[#f2941f] hover:bg-[#d98014] text-white text-sm font-bold shadow-lg whitespace-nowrap transition-colors">
             <PlayCircle className="w-5 h-5" /> Mulai Tur Singkat
           </button>
         </div>
+      </div>
+
+      {/* Akses Cepat */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {QUICK_ACCESS.map((a) => {
+          const Icon = a.icon;
+          return (
+            <button key={a.path} onClick={() => nav(a.path)} data-testid={`quick-${a.path.replace("/", "")}`}
+              className="group flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-3.5 text-left shadow-sm hover:shadow-md hover:border-[#14758a]/50 transition-all">
+              <div className="w-10 h-10 rounded-lg bg-teal-50 text-[#14758a] flex items-center justify-center shrink-0 group-hover:bg-[#14758a] group-hover:text-white transition-colors">
+                <Icon className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="font-bold text-slate-800 text-sm truncate">{a.label}</div>
+                <div className="text-xs text-slate-500 truncate">{a.desc}</div>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       {/* Search */}
       <div className="relative">
         <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
         <input data-testid="panduan-search" value={q} onChange={(e) => setQ(e.target.value)}
-          placeholder="Cari topik, modul, atau istilah\u2026"
+          placeholder="Cari topik, modul, atau istilah…"
           className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#14758a]/30 focus:border-[#14758a]" />
       </div>
 
@@ -278,7 +317,7 @@ export default function Panduan() {
           {/* Ikhtisar */}
           <section id="ikhtisar" className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
             <SectionTitle icon={Info}>Ikhtisar Sistem</SectionTitle>
-            <p className="text-slate-600 text-sm leading-relaxed">
+            <p className="text-slate-700 text-[15px] leading-relaxed">
               Sistem ini membantu seluruh proses administrasi keuangan secara terpusat dan transparan:
               mulai dari pengajuan oleh pemohon, persetujuan bertingkat, hingga pencatatan akuntansi yang siap
               diekspor ke Accurate. Setiap dokumen memiliki jejak status yang jelas sehingga mudah dipantau.
@@ -392,6 +431,26 @@ export default function Panduan() {
                   <span className="text-sm text-slate-600">{s.desc}</span>
                 </div>
               ))}
+            </div>
+          </section>
+
+          {/* Tips & Praktik Terbaik */}
+          <section id="praktik" className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+            <SectionTitle icon={Sparkles}>Tips &amp; Praktik Terbaik</SectionTitle>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {BEST_PRACTICES.map((b) => (
+                <div key={b.t} className="flex gap-3 rounded-lg border border-slate-200 p-4 hover:border-[#14758a]/40 hover:bg-teal-50/30 transition-colors">
+                  <CheckCircle2 className="w-5 h-5 text-[#14758a] shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-bold text-slate-800 text-sm">{b.t}</div>
+                    <div className="text-[13px] text-slate-600 mt-0.5 leading-relaxed">{b.d}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex items-start gap-2.5 text-[13px] text-[#0d3c45] bg-orange-50 border border-orange-100 rounded-lg p-4">
+              <Zap className="w-4 h-4 text-[#f2941f] shrink-0 mt-0.5" />
+              <span>Butuh bantuan cepat saat berada di sebuah halaman? Klik tombol <b>Bantuan</b> di pojok kanan atas modul untuk melihat langkah &amp; tips khusus halaman tersebut.</span>
             </div>
           </section>
 
