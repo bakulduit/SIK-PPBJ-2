@@ -2,11 +2,12 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import TourModal from "@/components/TourModal";
+import GuideVideos from "@/components/GuideVideos";
 import {
   LayoutDashboard, FileText, Wallet, Receipt, ClipboardCheck, Coins, ReceiptText,
   BookOpen, PiggyBank, Percent, ListTree, Users, History, Search, PlayCircle,
   ChevronDown, ShieldCheck, ArrowRight, HelpCircle, Workflow, Info, BookMarked,
-  Sparkles, Zap, CheckCircle2, Lightbulb,
+  Sparkles, Zap, CheckCircle2, Lightbulb, Video,
 } from "lucide-react";
 
 const ROLE_LABELS = {
@@ -216,6 +217,7 @@ const TOC = [
   { id: "modul", label: "Panduan Modul", icon: BookMarked },
   { id: "status", label: "Status Dokumen", icon: ClipboardCheck },
   { id: "praktik", label: "Tips & Praktik Terbaik", icon: Sparkles },
+  { id: "video", label: "Video Panduan", icon: Video },
   { id: "faq", label: "FAQ", icon: HelpCircle },
   { id: "glosarium", label: "Glosarium", icon: BookOpen },
 ];
@@ -453,6 +455,9 @@ export default function Panduan() {
               <span>Butuh bantuan cepat saat berada di sebuah halaman? Klik tombol <b>Bantuan</b> di pojok kanan atas modul untuk melihat langkah &amp; tips khusus halaman tersebut.</span>
             </div>
           </section>
+
+          {/* Video Panduan */}
+          <GuideVideos />
 
           {/* FAQ */}
           <section id="faq" className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">

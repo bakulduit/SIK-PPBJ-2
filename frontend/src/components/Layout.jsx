@@ -5,7 +5,9 @@ import {
   BookOpen, Percent, ListTree, Users, LogOut, Menu, X, Coins, ReceiptText, PiggyBank, History,
   PanelLeftClose, PanelLeftOpen, LifeBuoy,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import TourModal from "@/components/TourModal";
+import GlobalSearch from "@/components/GlobalSearch";
 
 const NAV = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "keuangan", "approver", "user"] },
@@ -46,6 +48,14 @@ export default function Layout({ children }) {
   });
   const role = user?.role || "user";
   const items = NAV.filter((n) => role === "superadmin" || n.roles.includes(role));
+
+  // Tur otomatis untuk pengguna baru (hanya sekali; disimpan di localStorage oleh TourModal)
+  const [autoTour, setAutoTour] = useState(false);
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("tour-seen") !== "1") setAutoTour(true);
+    } catch { /* ignore */ }
+  }, []);
 
   const SideContent = ({ mini = false }) => (
     <>
@@ -122,10 +132,13 @@ export default function Layout({ children }) {
             aria-label={collapsed ? "Perbesar menu" : "Perkecil menu"}>
             {collapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
           </button>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:block">PT. SUMBER BERDAYA BERSAMA</span>
+          <div className="flex items-center gap-2 mr-3">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider hidden xl:block whitespace-nowrap">PT. SUMBER BERDAYA BERSAMA</span>
           </div>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="flex-1 flex justify-center px-1 sm:px-3">
+            <GlobalSearch />
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
             <div className="text-right hidden sm:block">
               <div className="text-sm font-semibold text-slate-800">{user?.name}</div>
               <div className="text-xs text-slate-500">{user?.email}</div>
@@ -137,6 +150,8 @@ export default function Layout({ children }) {
         </header>
         <main className="p-4 md:p-6 lg:p-8 max-w-[1400px] mx-auto animate-fade-up">{children}</main>
       </div>
+
+      {autoTour && <TourModal onClose={() => setAutoTour(false)} userName={user?.name} />}
     </div>
   );
 }

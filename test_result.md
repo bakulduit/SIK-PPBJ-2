@@ -215,6 +215,35 @@ backend:
           agent: "testing"
           comment: "✅ COMPREHENSIVE TESTING PASSED (35/35 tests). ALL THREE EXPORT ENDPOINTS VERIFIED. EXPORT-ANNUAL (11 tests): ✓ Without auth → 401 (correct). ✓ With auth (year=2025) → HTTP 200, Content-Type xlsx correct, Content-Disposition 'Rekap_Anggaran_Tahunan_2025.xlsx' correct, body 136200 bytes (non-empty), valid PK signature, openpyxl loaded successfully, sheet 'Tahunan 2025' exists, TOTAL cell found. ✓ With unit_kerja parameter → 200, valid xlsx. EXPORT-RANGE (9 tests): ✓ Without auth → 401 (correct). ✓ With auth (start=2025-06&end=2025-08) → HTTP 200, Content-Type xlsx correct, Content-Disposition 'Rekap_Anggaran_2025-06_sd_2025-08.xlsx' correct, body 526797 bytes (non-empty), valid PK signature, 'Ringkasan' sheet exists, all 3 month sheets exist ('2025-06', '2025-07', '2025-08'). ✓ Invalid params (start=abc) → 400 (correct validation). EXPORT-MONTHLY REGRESSION (15 tests): ✓ Without auth → 401. ✓ With auth (period=2025-07) → 200, Content-Type xlsx, Content-Disposition 'Rekap_Anggaran_2025-07.xlsx', body 134963 bytes (includes logo/chart/signature as expected), valid PK signature, sheet 'Anggaran vs Realisasi' exists, TOTAL row found, header found. ✓ Empty period (2020-01) → 200, valid xlsx, TOTAL row, header. All authentication, headers, file structure, and validation requirements met. Features production-ready."
 
+  - task: "Cari Global dokumen lintas modul (GET /api/documents/search)"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Endpoint baru GET /api/documents/search?q=&limit=15 (auth). Regex case-insensitive pada no, kegiatan, keterangan, supplier, unit_kerja, lokasi. Mengembalikan [] bila q<2 karakter. Proyeksi ringkas (id,no,doc_type,kegiatan,keterangan,supplier,unit_kerja,total,status,tanggal,created_at), sort created_at desc, limit 1-50. Didefinisikan SEBELUM /documents/{doc_id}."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED (18/18 tests passed): Global document search endpoint working correctly. Without auth → 401 (correct). With auth (superadmin nashoharizal@gmail.com): empty q → 200 with [] (correct), q<2 chars (q=a) → 200 with [] (correct), valid q (001/PPBJ/BJM) → 200 with array (no documents in DB, but structure correct), limit parameter honored (limit=5 returns ≤5 items). CRITICAL: Route ordering verified - GET /api/documents/search NOT caught by /api/documents/{doc_id} route (returns array, not 404 'Dokumen tidak ditemukan'). All authentication, validation, and response structure requirements met. Feature production-ready."
+  - task: "Video Panduan settings (GET/PUT /api/guide-videos)"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "GET /api/guide-videos (auth) → {ppbj,pp,pumptum,jurnal,anggaran} default kosong. PUT /api/guide-videos (require_roles admin,keuangan) upsert ke db.guide_videos. Peran approver/user harus 403 pada PUT."
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED (14/14 tests passed): Guide videos settings endpoint working correctly. GET without auth → 401 (correct). GET with auth (superadmin) → 200 with object containing all required keys {ppbj, pp, pumptum, jurnal, anggaran}, all values are strings (default empty). PUT with auth (superadmin) body {ppbj:'https://www.youtube.com/watch?v=abc123', others empty} → 200 and value saved correctly. GET again → ppbj value persisted correctly. PUT without auth → 401 (correct). CLEANUP successful: all values restored to empty strings. Note: PUT with approver/user role test skipped (only superadmin credentials available, but require_roles decorator verified in code). All authentication, persistence, and response structure requirements met. Feature production-ready."
+
 frontend:
   - task: "Halaman Pengguna & Peran mendukung Super Admin"
     implemented: true
@@ -267,7 +296,9 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Cari Global dokumen lintas modul (GET /api/documents/search)"
+    - "Video Panduan settings (GET/PUT /api/guide-videos)"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -305,3 +336,13 @@ agent_communication:
 
     - agent: "testing"
       message: "✅ ALL FRONTEND TESTS PASSED (20/20 scenarios). Comprehensive Playwright testing completed for Panduan improvements and global UI enhancements. TEST RESULTS: **HALAMAN PANDUAN** (10 tests): ✓ Hero section displays correctly with em-dash character '—' (NOT literal \\u2014) in text 'Sistem Keuangan PT. Sumber Berdaya Bersama — dari membuat pengajuan'. ✓ Grid 'Akses Cepat' displays all 4 cards (Buat PPBJ, Buat PP, Anggaran, Jurnal Umum). ✓ Clicking 'Buat PPBJ' card navigates to /ppbj correctly. ✓ Search field placeholder shows ellipsis '…' (NOT literal \\u2026). ✓ Search filtering works (typing 'anggaran' filters modules to 1 result). ✓ TOC contains 'Tips & Praktik Terbaik' entry. ✓ Clicking TOC entry performs smooth scroll to section. ✓ 'Tips & Praktik Terbaik' section displays exactly 6 cards. ✓ Module accordion (PPBJ) opens and displays steps. ✓ FAQ accordion (6 items) opens and closes correctly. **TOUR MODAL** (5 tests): ✓ 'Mulai Tur Singkat' button (data-testid start-tour-btn) opens tour modal (data-testid tour-modal) with 7 steps. ✓ Navigation works: 'Lanjut' button (tour-next) advances steps, 'Kembali' button (tour-prev) goes back, dot indicators update correctly. ✓ 'Lewati tur' button (tour-skip) on non-final steps closes modal. ✓ Final step (step 7) displays 'Panduan Lengkap' (tour-open-guide) and 'Selesai' (tour-finish) buttons. ✓ 'Selesai' button closes modal. **BANTUAN KONTEKSTUAL** (4 tests): ✓ Help button (data-testid help-ppbj) on /ppbj opens help panel (data-testid help-panel-ppbj) sliding from right. ✓ Panel contains all required sections: role badges (User (Pemohon), Admin, Keuangan, Approver), 'Tujuan' section, numbered 'Langkah-langkah' (5 steps), red 'Perhatian' box with warning text, 'Tips' section with bullet points, 'Terkait' section with links (Cek pagu di Anggaran, Lanjut ke PUM), footer button 'Buka Panduan Lengkap'. ✓ Close button (X, data-testid help-close-ppbj) closes panel. Escape key closes panel. Body scroll locked when panel open. ✓ Help panels on /pp (data-testid help-pp, help-panel-pp) and /pum (data-testid help-pum, help-panel-pum) display module-specific content correctly. **GLOBAL UI/LAYOUT** (1 test): ✓ All pages (Dashboard, PPBJ, PP, Anggaran) render correctly with clean layout, readable text, no overlapping elements, modern rounded corners (--radius 0.625rem), soft shadows (shadow-sm/md/lg), improved typography (line-height 1.6, letter-spacing). Sidebar and header display properly with improved contrast. Brand colors (teal/orange) maintained. **CONSOLE LOGS**: No application errors found (only external monitoring service failures for __emergent_overlay__ and cdn-cgi/rum, which are expected). All unicode characters (em-dash —, ellipsis …) render correctly without showing literal escape sequences. All data-testid attributes working correctly. Features are production-ready."
+
+    - agent: "main"
+      message: "FITUR BARU (uji BACKEND saja): (A) Cari Global dokumen — GET /api/documents/search. (B) Video Panduan — GET/PUT /api/guide-videos. Kredensial di /app/memory/test_credentials.md (Super Admin: nashoharizal@gmail.com / SIKPPBJ2026). Untuk peran non-admin gunakan akun yang tersedia bila ada; jika hanya ada superadmin, cukup verifikasi 200 pada peran berwenang dan 401 tanpa auth.
+
+SEARCH (GET /api/documents/search): (1) Tanpa auth → 401/403. (2) Dengan auth & q kosong atau <2 karакter (mis. q=a) → HTTP 200 dan body [] (array kosong). (3) Dengan auth & q valid (mis. sebagian nomor dokumen, atau kata pada kegiatan/keterangan/supplier/unit_kerja) → HTTP 200 array; tiap item punya field id, no, doc_type, status, total; hasil case-insensitive. Bila belum ada dokumen di DB, cukup pastikan 200 & array (boleh kosong). (4) Parameter limit dihormati (mis. limit=5 → maksimal 5 item). PENTING: pastikan GET /api/documents/search TIDAK tertangkap oleh route /documents/{doc_id} (tidak boleh 404 'Dokumen tidak ditemukan').
+
+GUIDE-VIDEOS: (1) GET /api/guide-videos tanpa auth → 401/403; dengan auth → 200 object dengan kunci ppbj, pp, pumptum, jurnal, anggaran (string, default ''). (2) PUT /api/guide-videos dengan auth admin/keuangan/superadmin body {\"ppbj\":\"https://www.youtube.com/watch?v=abc123\",\"pp\":\"\",\"pumptum\":\"\",\"jurnal\":\"\",\"anggaran\":\"\"} → 200 dan object tersimpan (ppbj sesuai). (3) GET lagi → nilai ppbj yang baru disimpan persisten. (4) PUT tanpa auth → 401/403. (5) Bila tersedia akun peran approver/user, PUT harus 403. Kembalikan nilai guide-videos ke kosong setelah pengujian (PUT semua string ''). Jangan uji endpoint lain."
+
+    - agent: "testing"
+      message: "✅ ALL BACKEND TESTS PASSED (32/32). Comprehensive testing completed for two new backend features. **FITUR A - CARI GLOBAL DOKUMEN** (18 tests): ✓ Without auth → 401 (correct). ✓ With auth (superadmin nashoharizal@gmail.com): empty q → 200 with [] (correct), q<2 chars (q=a) → 200 with [] (correct), valid q (001/PPBJ/BJM) → 200 with array (no documents in DB, but endpoint structure correct), limit parameter honored (limit=5 returns ≤5 items). ✓ CRITICAL: Route ordering verified - GET /api/documents/search NOT caught by /api/documents/{doc_id} route (returns array, not 404 'Dokumen tidak ditemukan'). **FITUR B - VIDEO PANDUAN** (14 tests): ✓ GET without auth → 401 (correct). ✓ GET with auth → 200 with object containing all required keys {ppbj, pp, pumptum, jurnal, anggaran}, all values are strings (default empty). ✓ PUT with auth (superadmin) body {ppbj:'https://www.youtube.com/watch?v=abc123', others empty} → 200 and value saved correctly. ✓ GET again → ppbj value persisted correctly. ✓ PUT without auth → 401 (correct). ✓ CLEANUP successful: all values restored to empty strings. Note: PUT with approver/user role test skipped (only superadmin credentials available, but require_roles decorator verified in code). All authentication, validation, response structure, and persistence requirements met. Both features are production-ready."

@@ -586,6 +586,35 @@ async def update_tax_settings(body: TaxSettingsIn, user: dict = Depends(require_
     return doc
 
 
+# ------------------------------------------------------------------ Video Panduan
+GUIDE_VIDEO_FLOWS = ["ppbj", "pp", "pumptum", "jurnal", "anggaran"]
+
+
+class GuideVideosIn(BaseModel):
+    ppbj: str = ""
+    pp: str = ""
+    pumptum: str = ""
+    jurnal: str = ""
+    anggaran: str = ""
+
+
+@api_router.get("/guide-videos")
+async def get_guide_videos(user: dict = Depends(get_current_user)):
+    doc = await db.guide_videos.find_one({"key": "default"}, {"_id": 0, "key": 0})
+    base = {f: "" for f in GUIDE_VIDEO_FLOWS}
+    if doc:
+        base.update({k: v for k, v in doc.items() if k in GUIDE_VIDEO_FLOWS})
+    return base
+
+
+@api_router.put("/guide-videos")
+async def update_guide_videos(body: GuideVideosIn, user: dict = Depends(require_roles("admin", "keuangan"))):
+    doc = {"key": "default", **{f: (getattr(body, f) or "").strip() for f in GUIDE_VIDEO_FLOWS}}
+    await db.guide_videos.update_one({"key": "default"}, {"$set": doc}, upsert=True)
+    doc.pop("key", None)
+    return doc
+
+
 # ------------------------------------------------------------------ Documents
 async def next_doc_number(doc_type: str) -> str:
     year = datetime.now(timezone.utc).year
@@ -600,6 +629,30 @@ async def list_documents(doc_type: Optional[str] = None, user: dict = Depends(ge
     if doc_type:
         q["doc_type"] = doc_type
     docs = await db.documents.find(q, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return docs
+
+
+@api_router.get("/documents/search")
+async def search_documents(q: str = "", limit: int = 15, user: dict = Depends(get_current_user)):
+    """Pencarian global dokumen lintas modul berdasarkan nomor, kegiatan,
+    keterangan, supplier, dan unit kerja (case-insensitive)."""
+    term = (q or "").strip()
+    if len(term) < 2:
+        return []
+    rx = {"$regex": re.escape(term), "$options": "i"}
+    query = {"$or": [
+        {"no": rx},
+        {"kegiatan": rx},
+        {"keterangan": rx},
+        {"supplier": rx},
+        {"unit_kerja": rx},
+        {"lokasi": rx},
+    ]}
+    proj = {"_id": 0, "id": 1, "no": 1, "doc_type": 1, "kegiatan": 1,
+            "keterangan": 1, "supplier": 1, "unit_kerja": 1, "total": 1,
+            "status": 1, "tanggal": 1, "created_at": 1}
+    lim = max(1, min(limit, 50))
+    docs = await db.documents.find(query, proj).sort("created_at", -1).to_list(lim)
     return docs
 
 
