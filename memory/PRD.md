@@ -73,3 +73,12 @@ Membangun aplikasi sistem keuangan untuk PT. SBB berdasarkan form Excel PPBJ (Pe
 - **Cari Global**: kotak pencarian di header (GlobalSearch.jsx) memanggil GET /api/documents/search (regex no/kegiatan/keterangan/supplier/unit_kerja/lokasi, debounce 300ms, dropdown + navigasi ke /documents/:id). Endpoint didefinisikan sebelum /documents/{doc_id}.
 - **Video Panduan**: bagian baru di halaman Panduan (GuideVideos.jsx) dengan 5 slot alur (PPBJ, PP, PUM&PTUM, Jurnal, Anggaran). Admin/Keuangan dapat menempel tautan YouTube via tombol "Kelola Video" (validasi ID 11 karakter, reaktif). Tersimpan di DB via GET/PUT /api/guide-videos (PUT require_roles admin,keuangan).
 - Terverifikasi: backend 32/32, frontend 19/19 + verifikasi perbaikan validasi 9/9.
+
+
+---
+## Pembaruan (Cari Global lanjutan + Naskah Video)
+- **Filter Pencarian**: GET /api/documents/search kini menerima param opsional doc_type & status; UI header punya dropdown filter Jenis & Status + tombol Reset.
+- **Sorot Kata Kunci**: hasil pencarian menyorot bagian teks yang cocok (<mark> amber).
+- **Riwayat Pencarian**: query tersimpan di localStorage (maks 6), tampil saat input kosong, satu klik untuk mengulang, tombol Hapus.
+- Terverifikasi: backend filter (semua skenario) + frontend 14/14. Dokumen uji sementara sudah dibersihkan (DB kembali 0 dokumen).
+- **Deliverable non-kode**: naskah + storyboard video 1 menit (formal, Bahasa Indonesia) disimpan di /app/naskah_video_sik-ppbj.md.
